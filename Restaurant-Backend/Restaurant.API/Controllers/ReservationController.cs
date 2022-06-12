@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Restaurant.API.Interface;
 using Restaurant.Data;
 using Restaurant.Models;
 using Restaurant.Models.ViewModels;
@@ -11,101 +12,58 @@ namespace Restaurant.API.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly ILogger<ReservationController> _logger;
-        private readonly RestaurantDbContext _context;
+        private readonly IReservationService _service;
 
-        public ReservationController(ILogger<ReservationController> logger, RestaurantDbContext context)
+        public ReservationController(ILogger<ReservationController> logger, IReservationService service)
         {
             _logger = logger;
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
-        [Route("Get")]
-        public async Task<List<ReservationViewModel>> GetAsync()
+        [Route("")]
+        public async Task<IActionResult> GetAsync([FromQuery] DateTimeOffset? Start, [FromQuery] DateTimeOffset? End, [FromQuery] int? Seat)
         {
-            return await this._context.Reservations.Select(x => new ReservationViewModel(x)).ToListAsync();
+            var result = await _service.GetAsync(Start, End, Seat);
+            return Ok(result);
         }
 
         [HttpGet]
-        [Route("GetReservationById/{ReservationId}")]
-        public async Task<ReservationViewModel> GetByIdAsync([FromRoute] int ReservationId)
+        [Route("/{ReservationId}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int ReservationId)
         {
-            return await _context.Reservations.Where(x => x.Id == ReservationId).Select(x => new ReservationViewModel(x)).FirstOrDefaultAsync();
+            var result = await _service.GetByIdAsync(ReservationId);
+            if (result != null) {
+                return Ok(result);
+            }
+
+            return NotFound();
         }
 
         [HttpPost]
-        [Route("Post")]
-        public async Task<ReservationViewModel> Create(ReservationViewModel ReservationVM)
+        [Route("")]
+        public async Task<IActionResult> CreateAsync(ReservationViewModel ReservationVM)
         {
-            // Create Customer first
-            // If new customer wants to book
-            Customer customer = new Customer();
+            var result = await _service.CreateAsync(ReservationVM);
 
-            if (ReservationVM.Customer.CustomerId == 0)
-            {
-                CustomerViewModel CustomerVM = ReservationVM.Customer;
-
-                customer = new Customer()
-                {
-                    CustomerName = CustomerVM.CustomerName,
-                    EmailId = CustomerVM.EmailId,
-                    PhoneNumber = CustomerVM.PhoneNumber
-                };
-
-                _context.Customers.Add(customer);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                customer.CustomerId = ReservationVM.Customer.CustomerId;
-            }
-
-            _context.Reservations.Add(new Reservation()
-            {
-                StartTime = ReservationVM.StartTime,
-                EndTime = ReservationVM.EndTime,
-                TableId = ReservationVM.Table.TableId,
-                CustomerId = customer.CustomerId
-            });
-
-            await _context.SaveChangesAsync();
-
-            return ReservationVM;
+            return Ok(result);
         }
 
         [HttpPut]
-        [Route("Put")]
-        public async Task<ReservationViewModel> Update(ReservationViewModel ReservationVM)
+        [Route("")]
+        public async Task<IActionResult> UpdateAsync(ReservationViewModel ReservationVM)
         {
+            var result = await _service.UpdateAsync(ReservationVM);
 
-            var reservation = await _context.Reservations.FirstOrDefaultAsync(x => x.Id == ReservationVM.Id);
-
-            if (reservation != null)
-            {
-                reservation.StartTime = ReservationVM.StartTime;
-                reservation.EndTime = ReservationVM.EndTime;
-                reservation.TableId = ReservationVM.Table.TableId;
-
-                await _context.SaveChangesAsync();
-            }
-
-            return ReservationVM;
+            return Ok(result);
         }
 
         [HttpDelete]
-        [Route("Delete/{ReservationId}")]
-        public async Task<IActionResult> Delete([FromRoute] int ReservationId)
+        [Route("/{ReservationId}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] int ReservationId)
         {
-            var reservation = await _context.Reservations.FirstOrDefaultAsync(x => x.Id == ReservationId);
-
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-            _context.Reservations.Remove(reservation);
-            await _context.SaveChangesAsync();
-
-            return Ok();
+            var result = await _service.DeleteAsync(ReservationId);
+            return Ok(result);
         }
     }
 }
