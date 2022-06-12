@@ -29,8 +29,8 @@ namespace Restaurant.API.Helper
                        {
                            TableId = 2,
                            Name = "Table 2",
-                           Location = "Inner",
-                           Seats = 2
+                           Location = "Outer",
+                           Seats = 4
                        }, new RestaurantTable
                        {
                            TableId = 3,
@@ -42,7 +42,7 @@ namespace Restaurant.API.Helper
                            TableId = 4,
                            Name = "Table 4",
                            Location = "Terrace",
-                           Seats = 2
+                           Seats = 7
                        });
                 };
 

@@ -20,6 +20,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<ITableService, TableService>();
 
 
 using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider())

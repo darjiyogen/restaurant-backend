@@ -9,6 +9,7 @@ namespace Restaurant.API.Controllers
 {
 
     [ApiController]
+    [Route("reservation")]
     public class ReservationController : ControllerBase
     {
         private readonly ILogger<ReservationController> _logger;
