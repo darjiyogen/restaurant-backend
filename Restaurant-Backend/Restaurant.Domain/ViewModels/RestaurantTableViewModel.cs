@@ -9,9 +9,9 @@ namespace Restaurant.Models.ViewModels
     public class RestaurantTableViewModel
     {
         public int TableId { get; set; }
-        public string Name { get; set; }
-        public string Location { get; set; }
-        public int Seats { get; set; }
+        public string? Name { get; set; }
+        public string? Location { get; set; }
+        public int? Seats { get; set; }
 
         public RestaurantTableViewModel()
         {

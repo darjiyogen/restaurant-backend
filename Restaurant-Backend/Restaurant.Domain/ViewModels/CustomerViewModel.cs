@@ -12,9 +12,9 @@ namespace Restaurant.Models.ViewModels
 
         public string CustomerName { get; set; }
 
-        public string EmailId { get; set; }
+        public string? EmailId { get; set; }
 
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         public CustomerViewModel()
         {

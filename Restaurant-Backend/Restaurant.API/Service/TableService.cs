@@ -32,7 +32,7 @@ namespace Restaurant.API.Service
             {
               Location = TableVM.Location,
               Name = TableVM.Name,
-              Seats = TableVM.Seats,              
+              Seats = TableVM.Seats.HasValue ? TableVM.Seats.Value : 0,              
             };
 
             _context.RestaurantTables.Add(table);
